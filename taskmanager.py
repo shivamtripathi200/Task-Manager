@@ -12,7 +12,7 @@ class Task:
     def __init__(self,id : int, title: str, priority: str = "medium",due: Optional[str] = None):
         self.id = id
         self.title = title
-        self.priority = priority.lower()
+        self.priority = priority
         self.due = due
         self.status = "pending"
         self.created_at = datetime.now().isoformat().split(".")
@@ -31,7 +31,8 @@ def save_data(data:dict):
         json.dump(data, f, indent = 4)
 
 def load_data():
-    if not DB_FILE.exists():
+
+    if  not DB_FILE.exists() or DB_FILE.stat().st_size == 0:
         initialdata = {"tasks":[],"next_id":1}
         save_data(initialdata)
         return initialdata
@@ -41,13 +42,29 @@ def load_data():
 
 @app.command(help="function to insert a task")
 def edit(
-    title: str = typer.Argument(),
-    priority: str = typer.Option("medium"),
+    update_id : int = typer.Argument(),
+    title: str = typer.Argument(None),
+    priority: str = typer.Option(None),
     due:Optional[str] = typer.Option(None)
 ):
-    T = Task(id = 1, title = title, priority = priority, due = due)
-    save_data(T.to_dict())
-    print(f"task added successfully {title}")
+    data = load_data()
+    tasks = data["tasks"]
+    for t in tasks:
+        if t["id"] == update_id:
+            temp_task = t
+            break
+    
+    if title:
+        temp_task["title"] = title
+    if priority:
+        temp_task["priority"] = priority
+    if due:
+        temp_task["due"] = due
+    
+    save_data(data)
+
+
+
 
 @app.command()
 def list():
@@ -61,9 +78,10 @@ def add(
 ):
     data = load_data()
     data_base_task = data["tasks"]
-    next_id = data.get("next_id",1)
-    next_id +=1
+    next_id = data.get("next_id")
     temp = Task(id = next_id , title= title,priority=priority,due=due)
+    next_id +=1
+    data["next_id"] = next_id
     data_base_task.append(temp.to_dict())
     save_data(data)
 
