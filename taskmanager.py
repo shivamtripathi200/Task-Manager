@@ -3,6 +3,7 @@ from typing import Optional
 from datetime import datetime
 import json
 from pathlib import Path
+import csv
 
 app = typer.Typer(help="A simple command-line based task manager. ✅")
 
@@ -23,7 +24,7 @@ class Task:
             "priority":self.priority,
             "due": self.due,
             "status": self.status,
-            "created at": self.created_at
+            "created_at": self.created_at
         }
     
 def save_data(data:dict):
@@ -40,15 +41,15 @@ def load_data():
         return json.load(f)
 
 
-@app.command(help="Update an existing task.")
+@app.command(help="update [id] title")
 def update(
     update_id : int = typer.Argument(),
-    title: str = typer.Argument(None),
-    priority: str = typer.Option(None),
-    due:Optional[str] = typer.Option(None)
+    title: Optional[str] = None,
+    priority: Optional[str] =None,
+    due:Optional[str] = None
 ):
-    if priority.lower() not in ["low", "medium", "high"]:
-        print("Error: Priority must be 'low', 'medium', or 'high'.")
+    if priority not in ["low", "medium", "high"]:
+        typer.echo("Error: Priority must be 'low', 'medium', or 'high'.")
         raise typer.Exit(code=1)
     data = load_data()
     tasks = data["tasks"]
@@ -67,7 +68,7 @@ def update(
     save_data(data)
 
 
-@app.command(help = "update status for completed tasks")
+@app.command(help = "completed [id]")
 def completed(
     id: int = typer.Argument(),
 ):
@@ -83,29 +84,38 @@ def completed(
     save_data(data)
 
 
-@app.command(help="List all tasks.")
+@app.command(help="list --priority [option] --status [option]")
 def list(
     priority: str = typer.Option(None, help="Priority of the task (low, medium, high)."),
     status: str = typer.Option(None, help="status of the task")
 ):
-    if  priority == ["low", "medium","high"] :
-        data = load_data()
-        tasks = data["tasks"]
+    data = load_data()
+    tasks = data["tasks"]
+    if  priority in ["low", "medium","high"] :
         for task in tasks:
             if task["priority"]== priority:
-                print(json.dumps(task,indent = 4))
+                typer.echo(json.dumps(task,indent = 4))
+    
+    if status:
+        for task in tasks:
+            if task["status"] == status:
+                typer.echo(json.dumps(task,indent=4))
+
+    if not priority and not status:
+        typer.echo(json.dumps(tasks,indent=4))
+    
         
 
     
 
-@app.command(help="Add a new task")
+@app.command(help="add [argument] --priority [argument] --due [argument]")
 def add(
     title: str = typer.Argument(..., help="The title of the task."),
     priority: str = typer.Option("medium", help="Priority of the task (low, medium, high)."),
     due:Optional[str] = typer.Option(None, help="Due date in DD-MM-YYYY(optional) format.")
 ):
-    if priority.lower() not in ["low", "medium", "high"]:
-        print("Error: Priority must be 'low', 'medium', or 'high'.")
+    if priority not in ["low", "medium", "high"]:
+        typer.echo("Error: Priority must be 'low', 'medium', or 'high'.")
         raise typer.Exit(code=1)
     data = load_data()
     data_base_task = data["tasks"]
@@ -135,7 +145,17 @@ def delete(delete_id: int):
         typer.echo(f"No task found with id{delete_id}.")
     
 
+@app.command()
+def exportcsv(filename: str = typer.Argument("tasks.csv", help="CSV filename to export all tasks")):
+    data = load_data()
+    tasks = data.get("tasks", [])
 
+    with open(filename, mode='w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=["id", "title", "priority", "due", "status", "created_at"])
+        writer.writeheader()
+        writer.writerows(tasks)
+
+    typer.echo(f"Exported all {len(tasks)} tasks to {filename}")
     
 
 if __name__ == "__main__":
