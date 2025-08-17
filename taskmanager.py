@@ -68,23 +68,35 @@ def update(
 
 
 @app.command(help = "update status for completed tasks")
-def completed_task(
+def completed(
     id: int = typer.Argument(),
 ):
     data = load_data()
     tasks = data["tasks"]
     temp = None
     for task in tasks:
-        if task[id] == id :
+        if task["id"] == id :
             temp = task
+            print("task updated")
             break
     temp["status"] = "completed"
     save_data(data)
 
 
 @app.command(help="List all tasks.")
-def list():
-    print(json.dumps(load_data(), indent=4))
+def list(
+    priority: str = typer.Option(None, help="Priority of the task (low, medium, high)."),
+    status: str = typer.Option(None, help="status of the task")
+):
+    if  priority == ["low", "medium","high"] :
+        data = load_data()
+        tasks = data["tasks"]
+        for task in tasks:
+            if task["priority"]== priority:
+                print(json.dumps(task,indent = 4))
+        
+
+    
 
 @app.command(help="Add a new task")
 def add(

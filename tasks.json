@@ -5,7 +5,7 @@
             "title": "complete project",
             "priority": "high",
             "due": null,
-            "status": "pending",
+            "status": "completed",
             "created at": [
                 "2025-08-16T22:26:29",
                 "609702"
@@ -27,7 +27,7 @@
             "title": "help",
             "priority": "medium",
             "due": null,
-            "status": "pending",
+            "status": "completed",
             "created at": [
                 "2025-08-17T14:16:16",
                 "565396"
