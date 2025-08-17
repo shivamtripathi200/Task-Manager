@@ -86,6 +86,24 @@ def add(
     save_data(data)
 
 
+@app.command()
+def delete(delete_id: int):
+    data = load_data()
+    tasks = data["tasks"]
+    task_to_delete = None
+    for t in tasks:
+        if t["id"] == delete_id:
+            task_to_delete = t
+            break
+    
+    if task_to_delete:
+        tasks.remove(task_to_delete)
+        save_data(data)
+        typer.echo(f"Task with id{delete_id} deleted.")
+    else:
+        typer.echo(f("No task found with id{delete_id}."))
+        
+
 
     
 
