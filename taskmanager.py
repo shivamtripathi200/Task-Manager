@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import csv
 
-app = typer.Typer(help="A simple command-line based task manager. ✅")
+app = typer.Typer(help="A simple command-line based task manager. ")
 
 DB_FILE = Path("tasks.json")
 
@@ -41,31 +41,42 @@ def load_data():
         return json.load(f)
 
 
-@app.command(help="update [id] title")
+
+
+@app.command(help="Update --title [argument] --priority [argument] --due [argument]")
 def update(
-    update_id : int = typer.Argument(),
-    title: Optional[str] = None,
-    priority: Optional[str] =None,
-    due:Optional[str] = None
+    update_id: int = typer.Argument(..., help="ID of the task to update"),
+    title: Optional[str] = typer.Option(None, help="New title for the task"),
+    priority: Optional[str] = typer.Option(None, help="New priority (low, medium, high)"),
+    due: Optional[str] = typer.Option(None, help="New due date"),
 ):
-    if priority not in ["low", "medium", "high"]:
-        typer.echo("Error: Priority must be 'low', 'medium', or 'high'.")
-        raise typer.Exit(code=1)
     data = load_data()
+    tasks = data["tasks"]
+
+    # find task
+    task = None
     tasks = data["tasks"]
     for t in tasks:
         if t["id"] == update_id:
-            temp_task = t
+            task = t
             break
-    
+    if not task:
+        typer.echo(f" Task with id {update_id} not found")
+        raise typer.Exit(code=1)
+
+    # update fields
     if title:
-        temp_task["title"] = title
+        task["title"] = title
     if priority:
-        temp_task["priority"] = priority
+        if priority not in ["low", "medium", "high"]:
+            typer.echo(" Priority must be 'low', 'medium', or 'high'.")
+            raise typer.Exit(code=1)
+        task["priority"] = priority
     if due:
-        temp_task["due"] = due
-    
+        task["due"] = due
+
     save_data(data)
+    typer.echo(f" Task {update_id} updated successfully")
 
 
 @app.command(help = "completed [id]")
@@ -125,6 +136,7 @@ def add(
     data["next_id"] = next_id
     data_base_task.append(temp.to_dict())
     save_data(data)
+    typer.echo(f"{title} task is added")
 
 
 @app.command(help="Delete a task.")
