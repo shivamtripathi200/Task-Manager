@@ -31,82 +31,82 @@ It stores tasks in a local JSON file (tasks.json) and supports:
 ## ⚙ Setup Instructions
 
 ### 1. Clone the Repository
-bash
+```bash
 git clone https://github.com/your-username/task_manager.git
-cd task-manager-cli
-
+cd task_manager
+```
 
 ### 2. Create Virtual Environment (optional but recommended)
-bash
+```bash
 python -m venv venv
 source venv/bin/activate   # Linux/Mac
 venv\Scripts\activate      # Windows
-
+```
 
 ### 3. Install Dependencies
-bash
+```bash
 pip install typer[all]
-
+```
 
 ### 4. Run the App
-bash
+```bash
 python taskmanager.py --help
-
+```
 
 ---
 
 ## 📌 Available Commands
 
 ### ➕ Add a Task
-bash
+```bash
 python taskmanager.py add "Finish project" --priority high --due 20-08-2025
-
+```
 
 ### 📝 Update a Task
-bash
+```bash
 python taskmanager.py update 1 --title "Finish ML project" --priority medium
-
+```
 
 ### ✔ Mark Task as Completed
-bash
+```bash
 python taskmanager.py completed 1
-
+```
 
 ### 📋 List Tasks
-bash
+```bash
 python taskmanager.py list                # List all tasks
 python taskmanager.py list --priority high
 python taskmanager.py list --status completed
 
-
+```
 ### 🗑 Delete a Task
-bash
+```bash
 python taskmanager.py delete 2
 
-
+```
 ### 📤 Export to CSV
-bash
+```bash
 python taskmanager.py exportcsv tasks.csv
 
-
+```
 ---
 
 ## 📂 Project Structure
 
-
-task-manager-cli/
+```
+task_manager/
 ├── taskmanager.py   # Main CLI app
 ├── tasks.json       # Task database (auto-generated)
 ├── README.md        # Project documentation
 
 
+```
 
----
 
 ## 📊 Sample Data Format
 
 ### tasks.json structure:
-json
+```json
 {
   "tasks": [
     {
@@ -128,6 +128,7 @@ json
   ]
 }
 
+```
 
 ---
 
@@ -145,7 +146,7 @@ json
 ## 📝 Usage Examples
 
 ### Quick Start
-bash
+```bash
 # Add a high-priority task
 python taskmanager.py add "Deploy website" --priority high --due 30-08-2025
 
@@ -158,28 +159,25 @@ python taskmanager.py completed 1
 # Export all tasks to CSV
 python taskmanager.py exportcsv my_tasks.csv
 
+```
 
 ---
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (git checkout -b feature/amazing-feature)
-3. Commit your changes (git commit -m 'Add amazing feature')
-4. Push to the branch (git push origin feature/amazing-feature)
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
----
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
 ## 🐛 Issues & Support
 
-If you encounter any issues or have suggestions, please [open an issue](https://github.com/your-username/task-manager-cli/issues) on GitHub.
+If you encounter any issues or have suggestions, please [open an issue](https://github.com/your-username/task_manager/issues) on GitHub.
 
 ---
 
@@ -194,4 +192,4 @@ If you encounter any issues or have suggestions, please [open an issue](https://
 
 ---
 
-*Made with ❤ by [Shivam Tripathi]*
+*Made with ❤ by [Shivam Tripathi](https://github.com/your-username)*
