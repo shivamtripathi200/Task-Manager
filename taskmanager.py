@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 from pathlib import Path
 
-app = typer.Typer()
+app = typer.Typer(help="A simple command-line based task manager. ✅")
 
 DB_FILE = Path("tasks.json")
 
@@ -40,13 +40,16 @@ def load_data():
         return json.load(f)
 
 
-@app.command(help="function to insert a task")
-def edit(
+@app.command(help="Update an existing task.")
+def update(
     update_id : int = typer.Argument(),
     title: str = typer.Argument(None),
     priority: str = typer.Option(None),
     due:Optional[str] = typer.Option(None)
 ):
+    if priority.lower() not in ["low", "medium", "high"]:
+        print("Error: Priority must be 'low', 'medium', or 'high'.")
+        raise typer.Exit(code=1)
     data = load_data()
     tasks = data["tasks"]
     for t in tasks:
@@ -64,18 +67,34 @@ def edit(
     save_data(data)
 
 
+@app.command(help = "update status for completed tasks")
+def completed_task(
+    id: int = typer.Argument(),
+):
+    data = load_data()
+    tasks = data["tasks"]
+    temp = None
+    for task in tasks:
+        if task[id] == id :
+            temp = task
+            break
+    temp["status"] = "completed"
+    save_data(data)
 
 
-@app.command()
+@app.command(help="List all tasks.")
 def list():
     print(json.dumps(load_data(), indent=4))
 
-@app.command()
+@app.command(help="Add a new task")
 def add(
-    title: str = typer.Argument(),
-    priority: str = typer.Option("medium"),
-    due:Optional[str] = typer.Option(None)
+    title: str = typer.Argument(..., help="The title of the task."),
+    priority: str = typer.Option("medium", help="Priority of the task (low, medium, high)."),
+    due:Optional[str] = typer.Option(None, help="Due date in DD-MM-YYYY(optional) format.")
 ):
+    if priority.lower() not in ["low", "medium", "high"]:
+        print("Error: Priority must be 'low', 'medium', or 'high'.")
+        raise typer.Exit(code=1)
     data = load_data()
     data_base_task = data["tasks"]
     next_id = data.get("next_id")
@@ -86,7 +105,7 @@ def add(
     save_data(data)
 
 
-@app.command()
+@app.command(help="Delete a task.")
 def delete(delete_id: int):
     data = load_data()
     tasks = data["tasks"]
@@ -101,8 +120,8 @@ def delete(delete_id: int):
         save_data(data)
         typer.echo(f"Task with id{delete_id} deleted.")
     else:
-        typer.echo(f("No task found with id{delete_id}."))
-        
+        typer.echo(f"No task found with id{delete_id}.")
+    
 
 
     
